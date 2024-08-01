@@ -1,0 +1,94 @@
+---
+title: "obj2_pa"
+output: html_document
+date: "2024-07-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(ggcorrplot)
+
+eth_all <- read.csv("eth_nar_pa.csv")
+ind_all <- read.csv("ind_nar_pa.csv")
+nga_all <- read.csv("nga_nar_pa.csv")
+```
+
+
+
+# Correlation matrix to observe relationships between the probability of adequacy for all micronutrients and with MAR and MPA 
+
+```{r}
+# Ethiopia
+eth_cor <- cor(eth_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",
+                     "mpa")], method = "spearman")
+as.data.frame(eth_cor) 
+
+
+# Correlogram 
+ggcorrplot(eth_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="Ethiopia Correlogram",
+           ggtheme=theme_minimal())
+```
+
+```{r}
+# India
+ind_cor <- cor(ind_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",
+                     "mpa")], method = "spearman")
+as.data.frame(ind_cor) 
+```
+```{r}
+# Correlogram 
+ggcorrplot(ind_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="India Correlogram",
+           ggtheme=theme_minimal())
+```
+```{r}
+# Nigeria
+nga_cor <- cor(nga_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",
+                     "mpa")], method = "spearman")
+as.data.frame(nga_cor) 
+```
+
+```{r}
+# Correlogram 
+ggcorrplot(nga_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="Nigeria Correlogram",
+           ggtheme=theme_minimal())
+```
+

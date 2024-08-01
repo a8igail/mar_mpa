@@ -1,0 +1,300 @@
+---
+title: "obj3"
+output: html_document
+date: "2024-07-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(ggcorrplot)
+
+eth_all <- read.csv("eth_nar_pa.csv")
+ind_all <- read.csv("ind_nar_pa.csv")
+nga_all <- read.csv("nga_nar_pa.csv")
+```
+
+# Reconstructing the composite indicators with micronutrients found in staple grains (thiamin, niacin, vitb6, fe, zn)
+
+## MAR 
+```{r}
+
+# Ethiopia 
+eth_all <- eth_all %>% 
+  mutate(mar_sg = rowMeans(select(., 
+                                  thia_nar,
+                                  niac_nar,
+                                  vitb6_nar,
+                                  fe_nar,
+                                  zn_nar), na.rm =TRUE))
+
+
+# India 
+ind_all <- ind_all %>% 
+  mutate(mar_sg = rowMeans(select(., 
+                                  thia_nar,
+                                  niac_nar,
+                                  vitb6_nar,
+                                  fe_nar,
+                                  zn_nar), na.rm =TRUE))
+
+# Nigeria 
+nga_all <- nga_all %>% 
+  mutate(mar_sg = rowMeans(select(., 
+                                  thia_nar,
+                                  niac_nar,
+                                  vitb6_nar,
+                                  fe_nar,
+                                  zn_nar), na.rm =TRUE))
+
+```
+
+
+## MPA 
+```{r}
+
+# Ethiopia 
+eth_all <- eth_all %>% 
+  mutate(mpa_sg = rowMeans(select(., 
+                                  thia_pa,
+                                  niac_pa,
+                                  vitb6_pa,
+                                  fe_pa,
+                                  zn_pa), na.rm =TRUE))
+
+
+# India 
+ind_all <- ind_all %>% 
+  mutate(mpa_sg = rowMeans(select(., 
+                                  thia_pa,
+                                  niac_pa,
+                                  vitb6_pa,
+                                  fe_pa,
+                                  zn_pa), na.rm =TRUE))
+
+
+# Nigeria 
+nga_all <- nga_all %>% 
+  mutate(mpa_sg = rowMeans(select(., 
+                                  thia_pa,
+                                  niac_pa,
+                                  vitb6_pa,
+                                  fe_pa,
+                                  zn_pa), na.rm =TRUE))
+
+```
+# New correlation matrices
+```{r}
+
+# Ethiopia - Staple Grains
+eth_cor <- cor(eth_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",    # adding mar and mpa to compare side by side
+                     "mar_sg",
+                     "mpa",
+                     "mpa_sg")], method = "spearman")
+as.data.frame(eth_cor) 
+
+# Correlogram 
+ggcorrplot(eth_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="Ethiopia Staple Grains Correlogram",
+           ggtheme=theme_minimal())
+```
+```{r}
+# India -  Staple Grains
+ind_cor <- cor(ind_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",    # adding mar and mpa to compare side by side
+                     "mar_sg",
+                     "mpa",
+                     "mpa_sg")], method = "spearman")
+as.data.frame(ind_cor) 
+
+# Correlogram 
+ggcorrplot(ind_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="India Staple Grains Correlogram",
+           ggtheme=theme_minimal())
+```
+  
+```{r}
+# Nigeria -  Staple Grains
+nga_cor <- cor(nga_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",    # adding mar and mpa to compare side by side
+                     "mar_sg",
+                     "mpa",
+                     "mpa_sg")], method = "spearman")
+as.data.frame(nga_cor) 
+
+# Correlogram 
+ggcorrplot(nga_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="Nigeria Staple Grains Correlogram",
+           ggtheme=theme_minimal())
+```
+# Reconstructing the composite indicators with micronutrients found in nutrient dense foods (ribo, vitb12, vitA, folate)
+
+## MAR 
+```{r}
+
+# Ethiopia 
+
+eth_all <- eth_all %>% 
+  mutate(mar_nd = rowMeans(select(., 
+                                  ribo_nar,
+                                  vitb12_nar,
+                                  vita_rae_nar,
+                                  folate_nar), na.rm =TRUE))
+
+# India 
+
+ind_all <- ind_all %>% 
+  mutate(mar_nd = rowMeans(select(., 
+                                  ribo_nar,
+                                  vitb12_nar,
+                                  vita_rae_nar,
+                                  folate_nar), na.rm =TRUE))
+
+
+# Nigeria 
+
+nga_all <- nga_all %>% 
+  mutate(mar_nd = rowMeans(select(., 
+                                  ribo_nar,
+                                  vitb12_nar,
+                                  vita_rae_nar,
+                                  folate_nar), na.rm =TRUE))
+```
+
+
+## MPA 
+```{r}
+
+# Ethiopia 
+eth_all <- eth_all %>% 
+  mutate(mpa_nd = rowMeans(select(., 
+                                  ribo_nar,
+                                  vitb12_nar,
+                                  vita_rae_nar,
+                                  folate_nar), na.rm =TRUE))
+
+
+# India 
+ind_all <- ind_all %>% 
+  mutate(mpa_nd = rowMeans(select(., 
+                                  ribo_nar,
+                                  vitb12_nar,
+                                  vita_rae_nar,
+                                  folate_nar), na.rm =TRUE))
+
+# Nigeria 
+nga_all <- nga_all %>% 
+  mutate(mpa_nd = rowMeans(select(., 
+                                  ribo_nar,
+                                  vitb12_nar,
+                                  vita_rae_nar,
+                                  folate_nar), na.rm =TRUE))
+```
+# Correlograms
+
+```{r}
+# Ethiopia - Nutrient Dense Foods 
+eth_cor <- cor(eth_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",    # adding mar and mpa to compare side by side
+                     "mar_nd",
+                     "mpa",
+                     "mpa_nd")], method = "spearman")
+as.data.frame(eth_cor) 
+
+# Correlogram 
+ggcorrplot(eth_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="Ethiopia Nutrient Dense Foods Correlogram",
+           ggtheme=theme_minimal())
+```
+```{r}
+# India - Nutrient Dense Foods 
+ind_cor <- cor(ind_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",    # adding mar and mpa to compare side by side
+                     "mar_nd",
+                     "mpa",
+                     "mpa_nd")], method = "spearman")
+as.data.frame(ind_cor) 
+
+# Correlogram 
+ggcorrplot(ind_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="India Nutrient Dense Foods Correlogram",
+           ggtheme=theme_minimal())
+```
+```{r}
+# Nigeria - Nutrient Dense Foods 
+nga_cor <- cor(nga_all[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",    # adding mar and mpa to compare side by side
+                     "mar_nd",
+                     "mpa",
+                     "mpa_nd")], method = "spearman")
+as.data.frame(nga_cor) 
+
+# Correlogram 
+ggcorrplot(nga_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle",
+           colors = c("red", "white", "blue"), title="Nigeria Nutrient Dense Foods Correlogram",
+           ggtheme=theme_minimal())
+```
+```
+
+
+  
