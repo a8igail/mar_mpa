@@ -1,0 +1,196 @@
+---
+title: "calculating_nar"
+output: html_document
+date: "2024-07-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+eth <- read.csv("eth_mar_mpa.csv")
+ind <- read.csv("ind_mar_mpa.csv")
+nga <- read.csv("nga_mar_mpa.csv")
+```
+
+# Calculating the NAR for each micronutrient, for each household
+
+First divided raw intake by the recommended intake *(18-24yr old females)*. The values from Allen et al. (2019) are:
+
+```{r}
+# Recommended intake values
+vitA <- 490
+thia <- 0.9
+ribo <- 1.3
+niac <- 11
+vitb6 <- 1.3
+folate <- 250
+vitb12 <- 2
+fe <- 22.4
+zn <- 10.2
+```
+
+Creating new NAR variables, capped at 1 
+```{r}
+# Vitamin A
+eth <- eth %>% 
+  mutate(vita_rae_nar = vita_rae_mcg/vitA ) %>% 
+  mutate(vita_rae_nar = ifelse(vita_rae_nar > 1, 1, vita_rae_nar))
+
+
+# Folate 
+eth <- eth %>% 
+  mutate(folate_nar = folate_mcg/folate ) %>% 
+  mutate(folate_nar = ifelse(folate_nar > 1, 1, folate_nar))
+
+# Vitamin b12
+eth <- eth %>% 
+  mutate(vitb12_nar = vitb12_mcg/vitb12 ) %>% 
+  mutate(vitb12_nar = ifelse(vitb12_nar > 1, 1, vitb12_nar))
+
+# Iron
+eth <- eth %>% 
+  mutate(fe_nar = fe_mg/fe ) %>% 
+  mutate(fe_nar = ifelse(fe_nar > 1, 1, fe_nar))
+
+# Zinc
+eth <- eth %>% 
+  mutate(zn_nar = zn_mg/zn ) %>% 
+  mutate(zn_nar = ifelse(zn_nar > 1, 1, zn_nar))
+
+# The following micro nutrients are not included in mar 
+
+# Thiamine
+eth <- eth %>% 
+  mutate(thia_nar = thia_mg/thia ) %>% 
+  mutate(thia_nar = ifelse(thia_nar > 1, 1, thia_nar))
+
+# Ribo
+eth <- eth %>% 
+  mutate(ribo_nar = ribo_mg/ribo ) %>% 
+  mutate(ribo_nar = ifelse(ribo_nar > 1, 1, ribo_nar))
+
+# Niacin
+eth <- eth %>% 
+  mutate(niac_nar = niac_mg/niac ) %>% 
+  mutate(niac_nar = ifelse(niac_nar > 1, 1, niac_nar))
+
+# Vitamin b6
+eth <- eth %>% 
+  mutate(vitb6_nar = vitb6_mg/vitb6 ) %>% 
+  mutate(vitb6_nar = ifelse(vitb6_nar > 1, 1, vitb6_nar))
+
+
+```
+
+
+# India
+```{r}
+# Vitamin A
+ind <- ind %>% 
+  mutate(vita_rae_nar = vita_rae_mcg/vitA ) %>% 
+  mutate(vita_rae_nar = ifelse(vita_rae_nar > 1, 1, vita_rae_nar))
+
+
+# Folate 
+ind <- ind %>% 
+  mutate(folate_nar = folate_mcg/folate ) %>% 
+  mutate(folate_nar = ifelse(folate_nar > 1, 1, folate_nar))
+
+# Vitamin b12
+ind <- ind %>% 
+  mutate(vitb12_nar = vitb12_mcg/vitb12 ) %>% 
+  mutate(vitb12_nar = ifelse(vitb12_nar > 1, 1, vitb12_nar))
+
+# Iron
+ind <- ind %>% 
+  mutate(fe_nar = fe_mg/fe ) %>% 
+  mutate(fe_nar = ifelse(fe_nar > 1, 1, fe_nar))
+
+# Zinc
+ind <- ind %>% 
+  mutate(zn_nar = zn_mg/zn ) %>% 
+  mutate(zn_nar = ifelse(zn_nar > 1, 1, zn_nar))
+
+# The following micro nutrients are not included in mar 
+
+# Thiamine
+ind <- ind %>% 
+  mutate(thia_nar = thia_mg/thia ) %>% 
+  mutate(thia_nar = ifelse(thia_nar > 1, 1, thia_nar))
+
+# Ribo
+ind <- ind %>% 
+  mutate(ribo_nar = ribo_mg/ribo ) %>% 
+  mutate(ribo_nar = ifelse(ribo_nar > 1, 1, ribo_nar))
+
+# Niacin
+ind <- ind %>% 
+  mutate(niac_nar = niac_mg/niac ) %>% 
+  mutate(niac_nar = ifelse(niac_nar > 1, 1, niac_nar))
+
+# Vitamin b6
+ind <- ind %>% 
+  mutate(vitb6_nar = vitb6_mg/vitb6 ) %>% 
+  mutate(vitb6_nar = ifelse(vitb6_nar > 1, 1, vitb6_nar))
+
+
+write.csv(ind, file = "ind_nar.csv", row.names = FALSE)
+
+```
+
+# Nigeria
+```{r}
+# Vitamin A
+nga <- nga %>% 
+  mutate(vita_rae_nar = vita_rae_mcg/vitA ) %>% 
+  mutate(vita_rae_nar = ifelse(vita_rae_nar > 1, 1, vita_rae_nar))
+
+
+# Folate 
+nga <- nga %>% 
+  mutate(folate_nar = folate_mcg/folate ) %>% 
+  mutate(folate_nar = ifelse(folate_nar > 1, 1, folate_nar))
+
+# Vitamin b12
+nga <- nga %>% 
+  mutate(vitb12_nar = vitb12_mcg/vitb12 ) %>% 
+  mutate(vitb12_nar = ifelse(vitb12_nar > 1, 1, vitb12_nar))
+
+# Iron
+nga <- nga %>% 
+  mutate(fe_nar = fe_mg/fe ) %>% 
+  mutate(fe_nar = ifelse(fe_nar > 1, 1, fe_nar))
+
+# Zinc
+nga <- nga %>% 
+  mutate(zn_nar = zn_mg/zn ) %>% 
+  mutate(zn_nar = ifelse(zn_nar > 1, 1, zn_nar))
+
+# The following micro nutrients are not included in mar 
+
+# Thiamine
+nga <- nga %>% 
+  mutate(thia_nar = thia_mg/thia ) %>% 
+  mutate(thia_nar = ifelse(thia_nar > 1, 1, thia_nar))
+
+# Ribo
+nga <- nga %>% 
+  mutate(ribo_nar = ribo_mg/ribo ) %>% 
+  mutate(ribo_nar = ifelse(ribo_nar > 1, 1, ribo_nar))
+
+# Niacin
+nga <- nga %>% 
+  mutate(niac_nar = niac_mg/niac ) %>% 
+  mutate(niac_nar = ifelse(niac_nar > 1, 1, niac_nar))
+
+# Vitamin b6
+nga <- nga %>% 
+  mutate(vitb6_nar = vitb6_mg/vitb6 ) %>% 
+  mutate(vitb6_nar = ifelse(vitb6_nar > 1, 1, vitb6_nar))
+
+write.csv(nga, file = "nga_nar.csv", row.names = FALSE)
+```
+
+
