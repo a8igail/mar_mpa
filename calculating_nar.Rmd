@@ -59,8 +59,6 @@ eth <- eth %>%
   mutate(zn_nar = zn_mg/zn ) %>% 
   mutate(zn_nar = ifelse(zn_nar > 1, 1, zn_nar))
 
-# The following micro nutrients are not included in mar 
-
 # Thiamine
 eth <- eth %>% 
   mutate(thia_nar = thia_mg/thia ) %>% 
@@ -113,7 +111,6 @@ ind <- ind %>%
   mutate(zn_nar = zn_mg/zn ) %>% 
   mutate(zn_nar = ifelse(zn_nar > 1, 1, zn_nar))
 
-# The following micro nutrients are not included in mar 
 
 # Thiamine
 ind <- ind %>% 
@@ -168,7 +165,6 @@ nga <- nga %>%
   mutate(zn_nar = zn_mg/zn ) %>% 
   mutate(zn_nar = ifelse(zn_nar > 1, 1, zn_nar))
 
-# The following micro nutrients are not included in mar 
 
 # Thiamine
 nga <- nga %>% 
