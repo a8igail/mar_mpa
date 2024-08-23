@@ -3,9 +3,8 @@ Files detailing the code I have written so far to explore each of the 3 objectiv
 
 Obj1 - What are the composite indicators and how do they compare against each other?
 
-Obj2 - How do the composite indicators relate to the individual micronutrients?
+Obj2 - Do the composite indicators represent micronutrients used in food fortification programs and to what extent?
 
-Obj3 - How can we construct the composite indicators so that they are best representative of specific food group consumption?
 
 
 The files are still being edited.
