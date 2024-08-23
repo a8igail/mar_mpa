@@ -1,0 +1,449 @@
+---
+title: "obj1"
+output: html_document
+date: "2024-07-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# How do the composite indicators compare against each other?
+
+```{r}
+rq_packages <- c("tidyverse", "ggpubr", "table1")
+ 
+installed_packages <- rq_packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(rq_packages[!installed_packages])
+}
+ 
+lapply(rq_packages, require, character.only = T)
+rm(list= c("rq_packages", "installed_packages"))
+
+
+eth <- read.csv("eth_nar_pa.csv")
+ind <- read.csv("ind_nar_pa.csv") 
+nga <- read.csv("nga_nar_pa.csv")
+```
+
+## Distributions of MAR and MPA
+
+```{r}
+
+# MAR
+# Distribution of MAR values in Ethiopia
+ggplot(eth, aes(x=mar))+
+  geom_histogram(fill = "#486DB8")+
+  theme_minimal()+
+  labs(x = "MAR", y = "count",  title = "Distribution of MAR values in Ethiopia")+
+  theme_classic()
+
+
+
+# Distribution of MAR values in India
+ggplot(ind, aes(x=mar))+
+  geom_histogram(fill =  "#486DB8")+
+  theme_minimal()+
+  labs(x = "MAR", y = "count", title = "Distribution of MAR values in India")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_classic()
+
+
+# Distribution of MAR values in Nigeria
+ggplot(nga, aes(x=mar))+
+  geom_histogram(fill = "#486DB8")+
+  theme_minimal() +
+  labs(x = "MAR", y = "count", title = "Distribution  of MAR values in Nigeria")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_classic()
+
+```
+
+## Interpretation
+
+The distribution of mar in every country is **left** skewed.
+
+The majority of each sample has a high MAR value.
+
+Ethiopia and Nigeria have very high counts of high MAR. Nigeria's stepwise distribution suggests a higher number of individuals with increasing MAR values. The majority of each population have diets that are relatively adequate, with many approaching full adequacy.
+
+
+# How do the NAR distributions contribute to the MAR distribution?
+```{r}
+
+# to see the shape of the distributions, i changed the x limits so that truncated values are not included, and the y limits so that more wider distributions are clearer
+
+# vitamin a 
+ggplot(eth, aes(x=vita_rae_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+  ylab("Count")+
+  xlab("Vitamin A NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# folate 
+ggplot(eth, aes(x=folate_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+  ylim(0, 2000)+
+  ylab("Count")+
+  xlab("Folate NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+
+# vitamin b12
+ggplot(eth, aes(x=vitb12_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+  ylab("Count")+
+  xlab("Vitamin B12 NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# iron
+ggplot(eth, aes(x=fe_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+    ylim(0, 1000)+
+  ylab("Count")+
+  xlab("Iron NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# zinc
+ggplot(eth, aes(x=zn_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+
+    ylim(0, 1000)+
+  ylab("Count")+
+  xlab("Zinc NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# thiamine
+ggplot(eth, aes(x=thia_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+    ylim(0, 1000)+
+  ylab("Count")+
+  xlab("Thiamine NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# Riboflavin 
+ggplot(eth, aes(x=ribo_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+
+    ylim(0, 2000)+
+  ylab("Count")+
+  xlab("Riboflavin NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# Niacin 
+ggplot(eth, aes(x=niac_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+    ylim(0, 1000)+
+  ylab("Count")+
+  xlab("Niacin NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+
+# vit b6 
+ggplot(eth, aes(x=vitb6_nar))+
+  geom_histogram() +
+  theme_minimal()+
+  xlim(-0.05,1)+ 
+    ylim(0, 1000)+
+  ylab("Count")+
+  xlab("Vitamin B6 NAR")+
+  theme(plot.title = element_text(hjust = 0.5))+ 
+  theme_classic()
+```
+
+
+
+```{r}
+# MPA 
+# Distribution of MPA values in Ethiopia
+ggplot(eth, aes(x=mpa))+
+  geom_histogram(fill = "#8E48B8")+
+  theme_minimal()+
+  labs(x = "MPA", y = "count", title = "Distribution of MPA values in Ethiopia")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_classic()
+  
+# Distribution of MPA values in India
+ggplot(ind, aes(x=mpa))+
+  geom_histogram()+
+  theme_minimal()+
+  labs(x = "MPA", y = "count", title = "Distribution of MPA values in India")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# Distribution of MPA values in Nigeria
+ggplot(nga, aes(x=mpa))+
+  geom_histogram()+
+  theme_minimal()+
+  labs(x = "MPA", y = "count", title = "Distribution of MPA values in Nigeria")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Interpretation
+
+The MPA distributions are far less conventional with peaks and lows. The distributions show a lot of variation in the mean probability of adequacy across the three populations and suggest a degree of variability in meeting nutrient requirements
+
+Ethiopia - More peaks counts for higher MPAs (closer to 1), meaning that on avergae, large numbers of the population are likely to meet nutrient needs.
+Peaks at 0 and group of peaks in middle (similar pa values?)
+
+India & Nigeria - high counts of low MPA (close to 0), decreasing counts for higher MPA. Majority of the population is unlikely to meet their requirement needs. <!-- this is in contrast to MAR - where the majority of the Nigerian population have MAR values close to 1. -->
+
+
+# How do the individual PA distributions contribute to the MPA distribution?
+```{r}
+
+# plotting probability againt proportion of the population
+
+# vitamin a 
+ggplot(eth, aes(x=vita_rae_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Vitamin A PA", y = "Proportion", title = "Distribution of Vitamin A PA")+
+  theme_classic()
+
+
+# folate 
+ggplot(eth, aes(x=folate_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Folate PA", y = "Proportion")+
+  theme_classic()
+
+
+# vitamin b12 
+ggplot(eth, aes(x=vitb12_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Vitamin B12 PA", y = "Proportion")+
+  theme_classic()
+
+# iron 
+ggplot(eth, aes(x=fe_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Iron PA", y = "Proportion")+
+  theme_classic()
+
+# zinc 
+ggplot(eth, aes(x=zn_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Zinc PA", y = "Proportion")+
+  theme_classic()
+
+# thiamine 
+ggplot(eth, aes(x=thia_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Thiamine PA", y = "Proportion")+
+  theme_classic()
+
+
+# riboflavin 
+ggplot(eth, aes(x=ribo_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Riboflavin PA", y = "Proportion")+
+  theme_classic()
+
+# niacin 
+ggplot(eth, aes(x=niac_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Niacin PA", y = "Proportion", title = "Distribution of Niacin PA")+
+  theme_classic()
+
+# vitamin b6 
+ggplot(eth, aes(x=vitb6_pa))+
+ geom_histogram(aes(y = ..count../sum(..count..)))+
+  ylim(0,1)+
+  theme_minimal()+
+  labs(x = "Vitamin B6 PA", y = "Proportion")+
+  theme_classic()
+
+```
+
+
+
+```{r}
+## Comparing Descriptive (Tables)
+
+
+label(eth$mar) <- "Mean Adequacy Ratio"
+label(eth$mpa) <- "Mean Probability of Adequacy"
+# table1(~mar + mpa | res, data = eth, na.rm = TRUE, digits = 3, format.number = TRUE)
+
+label(ind$mar) <- "Mean Adequacy Ratio"
+label(ind$mpa) <- "Mean Probability of Adequacy"
+# table1(~mar + mpa | res, data = ind, na.rm = TRUE, digits = 3, format.number = TRUE)
+
+label(nga$mar) <- "Mean Adequacy Ratio"
+label(nga$mpa) <- "Mean Probability of Adequacy"
+# table1(~mar + mpa | res, data = nga, na.rm = TRUE, digits = 3, format.numebr = TRUE)
+
+# Focusing on median because of skewed distributions 
+
+# Overall
+  # MAR higher than MPA
+  # MAR does not vary between countries, however the MPA shows clear differences (e.g. Ethiopia standing out), as reflected in distributions^
+
+# Stratifying sub nationally 
+  # Both higher in urban than rural 
+  # ethiopia?
+```
+
+```{r}
+ethh <- eth %>% 
+  mutate(country = "Ethiopia")
+indd <- ind %>% 
+  mutate(country = "India")
+ngaa <- nga %>% 
+  mutate(country ="Nigeria")
+
+all <- rbind(ethh, indd, ngaa) %>% drop_na()
+
+# so that rural is one group
+all <- all %>%
+  mutate(res = str_trim(res)) %>%  
+  mutate(res = tolower(res)) %>%  
+  mutate(res = recode(res, 'rural' = 'Rural', 'urban' = 'Urban')) 
+
+
+summary <- function(x, ...) {
+  x <- na.omit(x)
+  
+  mean_val <- mean(x, na.rm = FALSE) %>% round(3)
+  sd_val <- sd(x, na.rm = FALSE) %>% round(3)
+  q1 <- quantile(x, 0.25) %>% round(3)
+  med <- median(x, na.rm = FALSE) %>%  round(3)
+  q3 <- quantile(x, 0.75) %>% round(3)
+  iqr <- q3 - q1
+  
+  # mean (SD)
+  mean_sd <- paste0(mean_val, " (", sd_val, ")")
+  
+  # median [Q1 - Q3]
+  median_iqr <- paste0(med, " [", iqr, "]")
+  
+  c("", 'Mean (SD)' = mean_sd, 'Median [IQR]' = median_iqr)
+}
+
+table1(~ mar + mpa | country, 
+       data = all, 
+       na.rm = FALSE, 
+       render.continuous = summary,
+       digits = 3, 
+       format.number = TRUE)
+
+table1(~ mar + mpa | country*res, 
+       data = all, 
+       na.rm = FALSE, 
+       render.continuous = summary,
+       digits = 3, 
+       format.number = TRUE)
+
+table1(~ mar + mpa | country*sep_quintile, 
+       data = all, 
+       na.rm = FALSE, 
+       render.continuous = summary,
+       digits = 3, 
+       format.number = TRUE)
+
+
+# steady increase in mar and mpa as sep_quintile increases (as population gets richer)
+
+```
+
+# Plotting MAR and MPA against each other
+
+```{r}
+# Ethiopia 
+mar_mpa_e <- ggscatter(eth, x = "mar",
+                       y = "mpa",
+                        alpha = 0.1,
+                       conf.int = TRUE )
+mar_mpa_e + stat_cor(method = "spearman",
+                p.accuracy = 0.001,
+                r.accuracy = 0.01)+
+  labs(x = "Mean Adequacy Ratio", y = "Mean Probability of Adequacy", title = "Ethiopia")+
+  xlim(0, 1)+
+  ylim(0, 1)
+
+
+#India 
+mar_mpa_i <- ggscatter(ind, x = "mar", y = "mpa",
+                       alpha = 0.1,
+                       conf.int = TRUE )
+mar_mpa_i + stat_cor(method = "spearman",
+                p.accuracy = 0.001,
+                r.accuracy = 0.01)+
+  labs(x = "Mean Adequacy Ratio", y = "Mean Probability of Adequacy", title = "India")+
+  xlim(0, 1)+
+  ylim(0, 1)
+
+#Nigeria
+mar_mpa_n <- ggscatter(nga, x = "mar",
+                       y = "mpa",
+                       alpha = 0.1,
+                       conf.int = TRUE )
+mar_mpa_n + stat_cor(method = "spearman",
+                p.accuracy = 0.001,
+                r.accuracy = 0.01)+
+  labs(x = "Mean Adequacy Ratio", y = "Mean Probability of Adequacy", title = "Nigeria")+
+  xlim(0, 1)+
+  ylim(0, 1)
+
+# All have very high correlations, suggesting that MAR and MPA are closely aligned - the higher the mean adequacy ratio, the higher the likelihood of meeting nutritional requirements 
+```
+
+# How do they compare against each other on a very controlled sample - e.g. controlling for SEP, res etc.. sub national level
+
+```{r}
+# Urban vs Rural, Ethiopia
+ggplot(eth, aes(x = mar, y = mpa))+
+  geom_point()+
+  facet_wrap(~res)
+
+# Urban vs Rural, India
+ggplot(ind, aes(x = mar, y = mpa))+
+  geom_point()+
+  facet_wrap(~res)
+
+# Urban vs Rural, Nigeria
+ggplot(nga, aes(x = mar, y = mpa))+
+  geom_point()+
+  facet_wrap(~res)
+
+# All the distributions look quite different but in each country, similar
+
+```

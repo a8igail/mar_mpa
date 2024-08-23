@@ -1,0 +1,121 @@
+---
+title: "Objective3_DD"
+output: html_document
+date: "2024-08-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rq_packages <- c("tidyverse", "ggpubr", "ggcorrplot", "Hmisc","table1", "viridis")
+ 
+installed_packages <- rq_packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(rq_packages[!installed_packages])
+}
+ 
+lapply(rq_packages, require, character.only = T)
+rm(list= c("rq_packages", "installed_packages"))
+```
+```{r}
+
+# joining ethiopia data w food groups data 
+
+fbdg <- read.csv("eth_fbdg_groups.csv")
+eth <- read.csv("eth_nar_pa.csv")
+
+
+composites <- eth %>% 
+  select(hhid,
+         ends_with("pa"),
+         ends_with("nar"),
+         ends_with("mar"))
+
+fbdg <- fbdg %>% 
+  select(-ends_with("g"))
+  
+data <- inner_join(composites, fbdg, by = c("hhid"))
+
+
+```
+```{r}
+# Making new composite for animal source foods 
+data <- data %>%
+  mutate(mpa_as = rowMeans(select(.,
+                                  vita_rae_pa,
+                                  vitb12_pa,
+                                  fe_pa,
+                                  zn_pa), na.rm = TRUE),
+         mar_as = rowMeans(select(.,
+                                  vita_rae_nar,
+                                  vitb12_nar,
+                                  fe_pa,
+                                  zn_pa), na.rm = TRUE))
+```
+
+
+```{r}
+# Descriptive statistics to show differences in probability of adequacy for household's whose consumption satisfy the recommended amount compared to those who do not 
+data %>% 
+  group_by(eggs_meat) %>% 
+  summarise(mean = mean(mpa_as), 
+            sd = sd(mpa_as))
+
+label(data$mpa_as) <- "Mean Probability of Adequacy (MPA)"
+label(data$mar_as) <- "Mean Adequacy Ratio (MAR)"
+label(data$eggs_meat) <- "Consumption Satisfying Recommendations"
+label(data$vita_rae_pa) <- "Probability of Adequacy of Vitamin A"
+label(data$vitb12_pa) <- "Probability of Adequacy of Vitamin B12"
+label(data$fe_pa) <- "Probability of Adequacy of Iron"
+label(data$zn_pa) <- "Probability of Adequacy of Zinc"
+
+
+
+summary <- function(x, ...) {
+  x <- na.omit(x)
+  
+  mean_val <- mean(x) %>% round(3)
+  sd_val <- sd(x) %>% round(3)
+  q1 <- quantile(x, 0.25) %>% round(3)
+  med <- median(x) %>%  round(3)
+  q3 <- quantile(x, 0.75) %>% round(3)
+  iqr <- q3 - q1
+  
+  # mean (SD)
+  mean_sd <- paste0(mean_val, " (", sd_val, ")")
+  
+  # median [Q1 - Q3]
+  median_iqr <- paste0(med, " [", iqr, "]")
+  
+  c("", 'Mean (SD)' = mean_sd, 'Median [IQR]' = median_iqr)
+}
+
+table1(~ vita_rae_pa + vitb12_pa + fe_pa +zn_pa + mpa_as + mar_as| eggs_meat, 
+       data = data, 
+       na.rm = TRUE, 
+       render.continuous = summary,
+       digits = 3, 
+       format.number = TRUE, 
+       overall = FALSE)
+
+
+
+# Visualize the results 
+ggplot(data, aes(x = as.factor(eggs_meat), y = mpa_as, fill = as.factor(eggs_meat), color = as.factor(eggs_meat)))+
+  geom_violin(width = 1, alpha = 0.1, colour = "black")+
+  geom_boxplot(width = 0.1, alpha = 0.1, color = "black")+
+  scale_color_viridis(discrete = TRUE, option = "D")+
+    scale_fill_viridis(discrete = TRUE, option = "D")+
+  theme_classic()+
+  theme()
+
+
+ggplot(data, aes(x = as.factor(eggs_meat), y = mpa_as, fill = as.factor(eggs_meat), color = as.factor(eggs_meat)))+
+  geom_boxplot(width = 0.4, alpha = 0.1, color = "black")+
+  scale_color_viridis(discrete = TRUE, option = "D")+
+    scale_fill_viridis(discrete = TRUE, option = "D")+
+  theme_classic()
+```
+

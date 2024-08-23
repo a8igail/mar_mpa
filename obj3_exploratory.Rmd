@@ -1,0 +1,291 @@
+---
+title: "obj3"
+output: html_document
+date: "2024-08-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rq_packages <- c("tidyverse", "ggpubr", "ggcorrplot")
+ 
+installed_packages <- rq_packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(rq_packages[!installed_packages])
+}
+ 
+lapply(rq_packages, require, character.only = T)
+rm(list= c("rq_packages", "installed_packages"))
+ 
+```
+```{r}
+fbdg <- read.csv("eth_fbdg_groups.csv")
+eth <- read.csv("eth_nar_pa.csv")
+```
+
+# exploratory analysis
+```{r}
+# Which food groups have the highest counts of meeting the recommended consumption?
+sums <- fbdg %>%
+  select(-ends_with("_g"), 
+         -hhid) %>% 
+  colSums() %>% 
+  as.data.frame() %>%
+  print() 
+
+
+  # cereals, grains, roots..
+  # fats and oils
+  #  fruit and veg all moderate high
+
+  # legumes, dairy, nuts are moderate/very low
+ 
+
+# nuts and seeds has very low numbers of households meeting the recommendations 
+
+```
+
+
+```{r}
+# Consumption of which food groups are reflected in their probability of adequacy?
+pa <- eth %>% 
+  select(hhid,
+         ends_with("pa"))
+  
+mpa_fbdg <- inner_join(pa, fbdg, by = c("hhid")) 
+
+# example : cereals, grains etc and b6 
+ggplot(mpa_fbdg, aes(x = vitb6_pa, y = cereals_grains_roots_tubers_g))+
+  geom_point(alpha = .1)
+    # hard to tell if there is a relationship
+
+# fruit and veg and vit a 
+ggplot(mpa_fbdg, aes(x = vita_rae_pa, y = fruit_veg_g))+
+  geom_point(alpha = .1)
+    # hard to tell if there is a relationship, too many ceiling and floor values
+
+```
+
+
+```{r}
+
+# Cor matrix of PA(micronutrient) against raw food group intake
+pa_g <- cor(mpa_fbdg[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "cereals_grains_roots_tubers_g",    # adding mar and mpa to compare side by side
+                     "legumes_g",
+                     "fruit_veg_g",
+                     "nuts_seeds_g",
+                     "eggs_meat_g",
+                     "dairy_g",
+                     "fats_oil_g")], method = "spearman")
+
+
+cor_matrix_upper <- pa_g 
+cor_matrix_upper <- cor_matrix_upper[, colSums(is.na(cor_matrix_upper)) < nrow(cor_matrix_upper)]
+
+pa_g <- as.data.frame(cor_matrix_upper) %>% 
+  select(cereals_grains_roots_tubers_g:fats_oil_g)
+
+
+filtered_pa_g <- pa_g[-c(10, 11, 12, 13, 14, 15, 16),] #note to self - keep comma!
+print(filtered_pa_g)
+
+#cereals -- 
+  # strongest correlations compared to other food groups
+  # consumption is positively correlated with probability of adequacy of vitb6, thiamine, folate c : higher the intake     of cereals etc, the more likely that household has a adequate vitamin b6 intake
+
+cor.test(~ cereals_grains_roots_tubers_g + vitb6_pa, data = mpa_fbdg, method = "spearman") # no point finding p value bc of very large sample 
+
+
+  # weak positive for the rest apart from vitb12 -- very weak negative correlation (near 0)
+
+
+# legumes -- 
+  # weak correlations
+  # very weak negative correlations with vitA and vitb12
+
+# fruit and veg 
+  # highest correlation with vit A probability of adequacy, ribo, folate
+  # vit b12 ~ 0
+
+# nuts and seeds
+  # ~0 with all micronutrients 
+  # no association between nuts and oil consumption and adequacy of individual mn 
+  # no contribution because of very low intake // mn not rich in these foods
+
+# eggs and meat
+  # vitb12 high
+  # ribo niacin zinc low/moderate cor
+
+# dairy 
+  # smaller correlations
+  # b12 highest
+
+# fats and oils 
+  # low cor
+  # niac highest
+
+
+# Low or weak intakes -- not micronutrient dense enough? vitamins from several other foods? interactions between micronutrients?
+
+# In objective2, Vitamin A was very poorly represented in the composite indicators - could this be because it is only really captured in the consumption of one food group (fruits and veg) = being shadowed in mar/mpa?
+# Similarly, riboflavin was well represented and apart from nuts and seeds, it has moderate correlations (has the highest average correlation with the food group consumption )
+
+rowMeans(filtered_pa_g)
+
+```
+
+
+```{r}
+# how does MPA correlate to total fg consumption score (e.g. diet most aligned with dietary recommendations)?
+
+# creating a new variable that is total fc score (0 - 7)
+
+mpa_fbdg <- mpa_fbdg %>% 
+  mutate(tot_fc = rowSums(select(., cereals_grains_roots_tubers,
+                                 legumes,
+                                 fruit_veg,
+                                 nuts_seeds,
+                                 eggs_meat,
+                                 dairy,
+                                 fats_oil))) 
+
+ 
+# note that no households consumed all of the recommendation!
+
+ggplot(mpa_fbdg, aes(x = tot_fc))+
+  geom_histogram()
+
+  # normal (binary) distribution 
+  # most households consume 3 fg enough to satisfy recommendations
+```
+
+
+
+```{r}
+# Correlation between MPA and number of food group recommendations satisfied by that household's consumption
+
+cor.test(~mpa + tot_fc, data = mpa_fbdg, method = "spearman") # r = 0.604 - strong correlation 
+
+
+ggplot(mpa_fbdg, aes(x = as.factor(tot_fc), y = mpa, fill = as.factor(tot_fc), colour = as.factor(tot_fc)))+
+  geom_boxplot(alpha = .1)+
+  theme_classic()+
+  theme(legend.position = 'none')+
+  labs(x = "Number of Food Group Recommendations Satisfied by Household Consumption (0 - 7)", y = "Mean Probability of Adequacy (MPA)")
+
+
+# As expected, the more of the recommendations which the household consumption satisy, the higher the average likelihood that that family is adequate in intake across the 9 micronutrients 
+```
+
+```{r}
+
+
+# how does the correlation change when consumption of nuts and seeds is removed? 
+
+mpa_fbdg <- mpa_fbdg %>% 
+  mutate(tot_fc_nn = rowSums(select(., cereals_grains_roots_tubers,
+                                 legumes,
+                                 fruit_veg,
+                                 eggs_meat,
+                                 dairy,
+                                 fats_oil))) 
+
+cor.test(~mpa + tot_fc_nn, data = mpa_fbdg, method = "spearman") 
+# r = 0.602 no difference in taking this out 
+
+# exclude fats and oils too
+
+
+mpa_fbdg <- mpa_fbdg %>% 
+  mutate(tot_fc_nf = rowSums(select(., cereals_grains_roots_tubers,
+                                 legumes,
+                                 fruit_veg,
+                                 eggs_meat,
+                                 dairy))) 
+
+cor.test(~mpa + tot_fc_nf, data = mpa_fbdg, method = "spearman") 
+# r = 0.66 increased a bit
+
+```
+```{r}
+#  The other way around - how does total fc score and MPA correlation vary when some micronutrients are taken out of the MPA?
+
+# removing b12 keeping all food groups
+mpa_fbdg <- mpa_fbdg %>% 
+  mutate(mpa_no_b12 = rowMeans(select(., 
+                                      vita_rae_pa,
+                                      thia_pa,
+                                      ribo_pa,
+                                      niac_pa,
+                                      vitb6_pa,
+                                      folate_pa,
+                                      fe_pa,
+                                      zn_pa), na.rm =TRUE))
+
+cor.test(~mpa_no_b12 + tot_fc, data = mpa_fbdg, method = "spearman")
+# correlation decreases
+
+
+# removing b12 and vitA keeping all food groups (low corr)
+mpa_fbdg <- mpa_fbdg %>% 
+  mutate(mpa_no_b12a = rowMeans(select(.,
+                                      thia_pa,
+                                      ribo_pa,
+                                      niac_pa,
+                                      vitb6_pa,
+                                      folate_pa,
+                                      fe_pa,
+                                      zn_pa), na.rm =TRUE))
+
+cor.test(~mpa_no_b12a + tot_fc, data = mpa_fbdg, method = "spearman")
+# no difference - b12 more impact on mpa
+
+```
+# Results so far...
+```{r}
+# Consumption of the food groups overall - is related to the overall probability of adequacy 
+# But on a more granular level, there are low correlations for specific food groups and specific micronutrients 
+  # because they are coming from different foods? interactions between them?
+```
+
+
+```{r}
+# Logistic regression between odds of meeting consumption or not (DV) and probability of adequacy for speciific MN 
+  # b6 and cereals 
+
+
+m1 <- glm(cereals_grains_roots_tubers ~  vitb6_pa, data = mpa_fbdg, family = binomial)
+summary(m1)
+
+exp(coef(m1))
+
+# interpretation in terms of vitb6 isn't the best - would prefer to say that change in consumption causes x change in adequacy...
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

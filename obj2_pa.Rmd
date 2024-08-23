@@ -1,0 +1,265 @@
+---
+title: "obj2_pa"
+output: html_document
+date: "2024-07-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+rq_packages <- c("tidyverse", "ggpubr", "ggcorrplot", "knitr","kableExtra", "corrr", "reshape2")
+ 
+installed_packages <- rq_packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(rq_packages[!installed_packages])
+}
+ 
+lapply(rq_packages, require, character.only = T)
+rm(list= c("rq_packages", "installed_packages"))
+```
+
+
+```{r}
+eth <- read.csv("eth_nar_pa.csv")
+ind <- read.csv("ind_nar_pa.csv")
+nga <- read.csv("nga_nar_pa.csv")
+
+```
+
+
+
+# Correlation matrix to observe relationships between the probability of adequacy for all micronutrients and with MAR and MPA 
+
+```{r}
+# Ethiopia
+eth_cor <- cor(eth[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",
+                     "mpa")], method = "spearman")
+
+
+# Formatted Table
+table1 <- kable(eth_cor, caption = "Correlation Matrix") %>%
+  kable_styling(bootstrap_options = "striped")
+table1
+
+
+
+# Correlogram 
+ggcorrplot(eth_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle", title="Ethiopia Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)
+
+# trying to change the order 
+eth_order <- c("vitb12_pa", "vita_rae_pa", "folate_pa", "thia_pa", "vitb6_pa", "niac_pa", "fe_pa", "zn_pa", "ribo_pa", "mar", "mpa")
+
+# Reorder the correlation matrix
+reordered_eth <- eth_cor[eth_order, eth_order]
+
+ggcorrplot(reordered_eth, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="Ethiopia Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)
+```
+
+
+
+```{r}
+# India
+ind_cor <- cor(ind[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa", 
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",
+                     "mpa")], method = "spearman")
+as.data.frame(ind_cor) 
+
+
+# Formatted Table
+table2 <- kable(ind_cor, caption = "India Correlation Matrix") %>%
+  kable_styling(bootstrap_options = "striped")
+
+save_kable(table2, file = "table2.png")
+
+
+# Correlogram 
+ggcorrplot(ind_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, method="circle", title="India Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                      low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)
+
+
+# trying to change the order 
+ind_order <- c("vita_rae_pa", "vitb12_pa", "thia_pa", "fe_pa","folate_pa", "ribo_pa",  "niac_pa","zn_pa", "vitb6_pa",  "mar", "mpa")
+
+# Reorder the correlation matrix
+reordered_ind <- ind_cor[ind_order, ind_order]
+
+ggcorrplot(reordered_ind, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="India Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)
+```
+
+```{r}
+# Nigeria
+nga_cor <- cor(nga[c("vita_rae_pa",
+                     "thia_pa",
+                     "ribo_pa",
+                     "niac_pa",
+                     "vitb6_pa",
+                     "folate_pa",
+                     "vitb12_pa",
+                     "fe_pa",
+                     "zn_pa",
+                     "mar",
+                     "mpa")], method = "spearman")
+as.data.frame(nga_cor) 
+ 
+# Formatted Table
+table3 <- kable(nga_cor, caption = "Nigeria Correlation Matrix") %>%
+  kable_styling(bootstrap_options = "striped")
+
+save_kable(table3, file = "table3.png")
+
+
+
+# Correlogram 
+ggcorrplot(nga_cor, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="Nigeria Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                       low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)
+
+
+#  ordering MN on x axis from least to best represented, increasing gradient
+
+#  MN mar mpa 
+
+# Change legend so that red is least represented, purple is best represented 
+
+
+
+
+
+# trying to change the order 
+nga_order <- c("vita_rae_pa", "ribo_pa", "vitb12_pa", "fe_pa","zn_pa", "niac_pa",  "folate_pa","thia_pa", "vitb6_pa",  "mar", "mpa")
+
+# Reorder the correlation matrix
+reordered_nga <- nga_cor[nga_order, nga_order]
+
+ggcorrplot(reordered_nga, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="Nigeria Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)
+
+```
+
+
+```{r}
+# does average pa influence how well represented the mN is?
+
+eth_prev <- eth %>%
+  select(vita_rae_pa:zn_pa, mar) %>%
+  colMeans(na.rm = FALSE)
+eth_prev <- data.frame(micronutrient = names(eth_prev), mean = eth_prev)
+
+ind_prev <- ind %>% 
+  select(vita_rae_pa:zn_pa, mar) %>%
+  colMeans(na.rm = FALSE)
+ind_prev <- data.frame(micronutrient = names(ind_prev), mean = ind_prev)
+
+nga_prev <- nga %>% 
+select(vita_rae_pa:zn_pa, mar) %>%
+  colMeans(na.rm = FALSE)
+nga_prev <- data.frame(micronutrient = names(nga_prev), mean = nga_prev)
+
+
+# change correlogram for Ethiopia 
+y_labels <- paste0(eth_prev$micronutrient, " (", round(eth_prev$mean, 2), ")")
+names(y_labels) <- eth_prev$micronutrient
+
+
+# eth w average labels
+ggcorrplot(reordered_eth, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="Ethiopia Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)+
+    theme(axis.text.y = element_text(size = 12)) +
+  scale_y_discrete(labels = y_labels) +
+  labs(title = "Ethiopia Correlogram",
+       subtitle = "(Average Estimates)",
+       x = NULL, y = NULL)
+
+
+# change correlogram for india 
+y_labels <- paste0(ind_prev$micronutrient, " (", round(ind_prev$mean, 2), ")")
+names(y_labels) <- ind_prev$micronutrient
+
+ggcorrplot(reordered_ind, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="India Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)+
+    theme(axis.text.y = element_text(size = 12)) +
+  scale_y_discrete(labels = y_labels) +
+  labs(title = "India Correlogram",
+       subtitle = "(Average Estimates)",
+       x = NULL, y = NULL)
+
+
+ # change correlogram for nigeria 
+y_labels <- paste0(nga_prev$micronutrient, " (", round(nga_prev$mean, 2), ")")
+names(y_labels) <- nga_prev$micronutrient
+
+ggcorrplot(reordered_nga, hc.order = F, type = "lower",
+           lab = TRUE, lab_size = 3, title="Nigeria Correlogram",
+           ggtheme=theme_minimal())+
+  scale_fill_gradient2(limits = c(0, 1), 
+                        low = "white", 
+                       high = "blue",
+                       midpoint = 0.25)+
+    theme(axis.text.y = element_text(size = 12)) +
+  scale_y_discrete(labels = y_labels) +
+  labs(title = "Nigeria Correlogram",
+       subtitle = "(Average Estimates)",
+       x = NULL, y = NULL)
+```
